@@ -1,0 +1,39 @@
+﻿<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <context:component-scan base-package="com.myoa.oa.dao"/>
+    <!--用于扫描properties得到配置项-->
+    <!--<context:property-placeholder location="classpath:properties/*.properties"/>-->
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/oa?useUnicode=true&amp;characterEncoding=utf-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="${jdbc.passWord}"/>
+    </bean>
+
+    <!--创建session工厂-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--必须要配置数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--这样在mapper中调用pojo类不需要写路径名-->
+        <property name="typeAliasesPackage" value="com.myoa.oa.entity"/>
+        <!--这样就不用在resources下新建和dao接口一样的路径去寻找mapper，直接指定路径-->
+        <property name="mapperLocations" value="classpath:mappers/*.xml"/>
+    </bean>
+
+    <!--映射器接口，不需要主动调用-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--至少配置两个-->
+        <property name="sqlSessionFactoryBeanName" value="sessionFactory"/>
+        <property name="basePackage" value="com.myoa.oa.dao"/>
+    </bean>
+
+
+</beans>
